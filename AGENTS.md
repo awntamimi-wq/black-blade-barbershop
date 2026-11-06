@@ -28,3 +28,7 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+- Bookings go through the `book_appointment` SECURITY DEFINER RPC, and a partial unique index on appointments(barber_id, appt_date, appt_time) where status <> cancelled enforces no double booking — why: anonymous visitors cannot read or write appointments directly.
+- UI strings live in src/lib/i18n.tsx (en/ar dictionaries); the provider sets html dir=rtl for Arabic — why: one place for bilingual copy.
+- Admin access = has_role(uid, admin); the first signed-up account is made admin by a trigger — why: no hardcoded credentials.
