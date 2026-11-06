@@ -46,8 +46,11 @@ function AdminPage() {
   }, []);
 
   useEffect(() => {
-    if (!session) return setIsAdmin(null);
-    supabase.rpc("has_role", { _user_id: session.user.id, _role: "admin" }).then(({ data }) => setIsAdmin(!!data));
+    if (!session) {
+      setIsAdmin(null);
+      return;
+    }
+    void supabase.rpc("has_role", { _user_id: session.user.id, _role: "admin" }).then(({ data }) => setIsAdmin(!!data));
   }, [session]);
 
   return (
@@ -250,10 +253,16 @@ function ServicesAdmin() {
   const { data = [] } = useQuery(servicesQuery);
   const [editing, setEditing] = useState<Svc | null>(null);
   const save = async (s: Svc) => {
-    if (!s.name_en.trim() || !s.name_ar.trim() || s.price < 0 || s.duration_min < 5) return toast.error(t.booking.errors.generic);
+    if (!s.name_en.trim() || !s.name_ar.trim() || s.price < 0 || s.duration_min < 5) {
+      toast.error(t.booking.errors.generic);
+      return;
+    }
     const { id, ...rest } = s;
     const { error } = id ? await supabase.from("services").update(rest).eq("id", id) : await supabase.from("services").insert(rest);
-    if (error) return toast.error(error.message);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
     toast.success(t.admin.updated);
     qc.invalidateQueries({ queryKey: ["services"] });
     setEditing(null);
