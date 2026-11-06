@@ -1,23 +1,41 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
+import { Nav } from "@/components/site/Nav";
+import { About, Contact, Footer, Gallery, Hero, Reviews, Services, Team, WhatsAppFab } from "@/components/site/Sections";
+import { Booking } from "@/components/site/Booking";
 
-// The home route ships no og:image, so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "BLACK BLADE — Premium Barbershop in Amman" },
+      { name: "description", content: "Precision cuts, skin fades, beard sculpting and royal shaves. Book your chair at BLACK BLADE online." },
+      { property: "og:title", content: "BLACK BLADE — Premium Barbershop" },
+      { property: "og:description", content: "Precision cuts, fades and royal shaves. Book online in seconds." },
+    ],
+  }),
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
 function Index() {
+  const [service, setService] = useState("");
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
+    <main>
+      <Nav />
+      <Hero />
+      <About />
+      <Services
+        onPick={(id) => {
+          setService(id);
+          document.getElementById("booking")?.scrollIntoView({ behavior: "smooth" });
+        }}
       />
-    </div>
+      <Gallery />
+      <Team />
+      <Reviews />
+      <Booking service={service} setService={setService} />
+      <Contact />
+      <Footer />
+      <WhatsAppFab />
+    </main>
   );
 }
